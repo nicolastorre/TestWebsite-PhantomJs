@@ -5,20 +5,33 @@
  * Licence: MIT
  * 
  */
+ 
 	'use strict';
 
 	var webpage = require('webpage');
 
+	/**
+	 * List of websites to be customized
+	 * 
+	 */
 	var sites = [
 	    "http://www.google.com"
 	];
 
+	/**
+	 * main controller
+	 * 
+	 */
 	var controller = function() {
 		this.init();
 	};
 
 	controller.prototype = {
 
+		/**
+		 * Init the controller
+		 *  
+		 */
 		init: function() {
 			console.log('Init script parameters');
 
@@ -32,6 +45,10 @@
 
 		},
 
+		/**
+		 * Init the parameters for one website
+		 *  
+		 */
 		initParam: function() {
 			this.time_start = Date.now();
 			this.error_buffer = [];
@@ -46,6 +63,10 @@
 			
 		},
 
+		/**
+		 * Test a URL (status, loading time, ressources and screenshot)
+		 * 
+		 */
 		testURL: function() {
 			var that = this;
 			var bgColor;
@@ -90,16 +111,25 @@
 						msgStatus = "FAIL";
 					}
 
+					// Add the result of the current test to the ouput
 					that.addToOutputHTML(bgColor, color, msgStatus);
+					
+					// Call testURL for the next URL
 					that.index = that.index + 1;
 					that.testURL();
 				});
 
 			} else {
+				
+				// End of the analysis
 				this.exportOutputPDF();
 			}
 		},
 		
+		/**
+		 * Generate  the pdf report
+		 * 
+		 */
 		exportOutputPDF: function() {
 
 			this.outputHTML += "</table></body></html>";
@@ -117,6 +147,10 @@
             }, 5000);
 		},
 		
+		/**
+		 * Add the result of a test to the main output
+		 * 
+		 */
 		addToOutputHTML: function(bgColor, color, msgStatus) {
 
 		        var img = this.pages[this.index].renderBase64('PNG');
@@ -131,6 +165,10 @@
 		        
 		},
 
+		/**
+		 * Increments the number of received resources by type
+		 * 
+		 */
 		onResourceReceived: function(response) {
 			switch (response.contentType) {
 				case 'image/png':
@@ -159,6 +197,10 @@
 			}
 		},
 
+		/**
+		 *  Invoked when there is a JavaScript execution error in the web page context
+		 *  
+		 */
 		onError: function(msg, trace) {
 			this.error_buffer = [msg];
 			if (trace) {
@@ -170,5 +212,6 @@
 
 	};
 	
+	// Start the controller
 	var phantomJSTest = new controller();
 
